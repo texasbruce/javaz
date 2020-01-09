@@ -628,13 +628,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return filter(predicate.negate());
     }
 
-    @Deprecated
-    @Override
-    public TreeSet<T> reject(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
     @Override
     public <U> TreeSet<U> flatMap(Comparator<? super U> comparator,
             Function<? super T, ? extends Iterable<? extends U>> mapper) {
@@ -709,16 +702,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         } else {
             return retainAll(elements);
         }
-    }
-
-    /**
-     * A {@code TreeSet} is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
     }
 
     @Override
@@ -1035,12 +1018,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public String stringPrefix() {
-        return "TreeSet";
-    }
-
-    @Override
     public String toString() {
-        return mkString(stringPrefix() + "(", ", ", ")");
+        return mkString(getClass().getSimpleName() + "(", ", ", ")");
     }
 }

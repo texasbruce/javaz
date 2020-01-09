@@ -825,7 +825,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     @Override
     public T head() {
         if (isEmpty()) {
-            throw new NoSuchElementException("head of empty " + stringPrefix());
+            throw new NoSuchElementException("head of empty " + getClass().getSimpleName());
         } else {
             return front.head();
         }
@@ -846,7 +846,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     @Override
     public Queue<T> init() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("init of empty " + stringPrefix());
+            throw new UnsupportedOperationException("init of empty " + getClass().getSimpleName());
         } else if (rear.isEmpty()) {
             return new Queue<>(front.init(), rear);
         } else {
@@ -911,16 +911,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         } else {
             return new Queue<>(front.intersperse(element), rear.intersperse(element).append(element));
         }
-    }
-
-    /**
-     * A {@code Queue} is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
     }
 
     @Override
@@ -1215,7 +1205,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     @Override
     public Queue<T> tail() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty " + stringPrefix());
+            throw new UnsupportedOperationException("tail of empty " + getClass().getSimpleName());
         } else {
             return new Queue<>(front.tail(), rear);
         }
@@ -1346,11 +1336,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     private Object readResolve() {
         return isEmpty() ? EMPTY : this;
-    }
-
-    @Override
-    public String stringPrefix() {
-        return "Queue";
     }
 
     @Override

@@ -712,16 +712,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     /**
-     * An {@code Array} is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
-    }
-
-    /**
      * An {@code Array} is computed eagerly.
      *
      * @return false
@@ -865,13 +855,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     public Array<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Collections.filterNot(this, predicate);
-    }
-
-    @Deprecated
-    @Override
-    public Array<T> reject(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Collections.reject(this, predicate);
     }
 
     @Override
@@ -1176,13 +1159,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Array<T> removeAll(Iterable<? extends T> elements) {
         return io.vavr.collection.Collections.removeAll(this, elements);
-    }
-
-    @Override
-    @Deprecated
-    public Array<T> removeAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return reject(predicate);
     }
 
     @Override
@@ -1556,13 +1532,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public String stringPrefix() {
-        return "Array";
-    }
-
-    @Override
     public String toString() {
-        return mkString(stringPrefix() + "(", ", ", ")");
+        return mkString(getClass().getSimpleName() + "(", ", ", ")");
     }
 
     private static <T> Object[] toArray(Iterable<T> elements) {

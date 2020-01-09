@@ -22,7 +22,6 @@ import io.vavr.*;
 import io.vavr.control.Option;
 import org.junit.Test;
 
-import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -31,8 +30,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static io.vavr.API.*;
-import static io.vavr.OutputTester.*;
-import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingInt;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -751,41 +748,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldReturnTheSameInstanceWhenFilterNotOnEmptyTraversable() {
         final Traversable<?> empty = empty();
         assertThat(empty.filterNot(v -> true)).isSameAs(empty);
-    }
-
-    // -- reject
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldRejectExistingElements() {
-        assertThat(of(1, 2, 3).reject(i -> i == 1)).isEqualTo(of(2, 3));
-        assertThat(of(1, 2, 3).reject(i -> i == 2)).isEqualTo(of(1, 3));
-        assertThat(of(1, 2, 3).reject(i -> i == 3)).isEqualTo(of(1, 2));
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).reject(ignore -> false)).isEqualTo(of(1, 2, 3));
-        } else {
-            final Traversable<Integer> t = of(1, 2, 3);
-            assertThat(t.reject(ignore -> false)).isSameAs(t);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldRejectNonExistingElements() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(this.<Integer> empty().reject(i -> i == 0)).isEqualTo(empty());
-            assertThat(of(1, 2, 3).reject(i -> i > 0)).isEqualTo(empty());
-        } else {
-            assertThat(this.<Integer> empty().reject(i -> i == 0)).isSameAs(empty());
-            assertThat(of(1, 2, 3).reject(i -> i > 0)).isSameAs(empty());
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldReturnSameInstanceWhenRejectingEmptyTraversable() {
-        final Traversable<?> empty = empty();
-        assertThat(empty.reject(v -> true)).isSameAs(empty);
     }
 
     // -- find
@@ -2091,68 +2053,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.IMMUTABLE)).isTrue();
     }
 
-    // -- stderr
-
-    @Test
-    public void shouldWriteToStderr() {
-        assertThat(captureErrOut(()->of(1, 2, 3).stderr())).isEqualTo("1\n" +
-                "2\n" +
-                "3\n");
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldHandleStderrIOException() {
-        withFailingErrOut(()->of(0).stderr());
-    }
-
-    // -- stdout
-
-    @Test
-    public void shouldWriteToStdout() {
-        assertThat(captureStdOut(()->of(1, 2, 3).stdout())).isEqualTo("1\n" +
-                "2\n" +
-                "3\n");
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldHandleStdoutIOException() {
-        withFailingStdOut(()->of(0).stdout());
-    }
-
-    // -- PrintStream
-
-    @Test
-    public void shouldWriteToPrintStream() {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
-        final PrintStream out = new PrintStream(baos);
-        of(1, 2, 3).out(out);
-        assertThat(baos.toString()).isEqualTo(of(1, 2, 3).mkString("", lineSeparator(), lineSeparator()));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldHandlePrintStreamIOException() {
-        try (PrintStream failingPrintStream = failingPrintStream()) {
-            of(0).out(failingPrintStream);
-        }
-    }
-
-    // -- PrintWriter
-
-    @Test
-    public void shouldWriteToPrintWriter() {
-        final StringWriter sw = new StringWriter();
-        final PrintWriter out = new PrintWriter(sw);
-        of(1, 2, 3).out(out);
-        assertThat(sw.toString()).isEqualTo(of(1, 2, 3).mkString("", lineSeparator(), lineSeparator()));
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldHandlePrintWriterIOException() {
-        try (PrintWriter failingPrintWriter = failingPrintWriter()) {
-            of(0).out(failingPrintWriter);
-        }
-    }
-
     // -- sum
 
     @Test
@@ -2622,8 +2522,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
                 "4:2", "5:2", "6:3",
                 "7:4", "8:6", "9:6"
         );
-        final Seq<Tree<String>> roots = value
-                .toTree(s -> s.split(":")[0], s -> s.split(":").length == 1 ? null : s.split(":")[1])
+        final Seq<Tree<String>> roots = Tree
+                .build(value, s -> s.split(":")[0], s -> s.split(":").length == 1 ? null : s.split(":")[1])
                 .map(l -> l.map(s -> s.split(":")[0]));
         assertThat(roots).hasSize(1);
         final Tree<String> root = roots.head();
@@ -2719,7 +2619,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldConformEmptyStringRepresentation() {
         final Traversable<Object> testee = empty();
         if (!testee.hasDefiniteSize()) {
-            assertThat(testee.toString()).isEqualTo(testee.stringPrefix() + "()");
+            assertThat(testee.toString()).isEqualTo(testee.getClass().getSimpleName() + "()");
             testee.size(); // evaluates all elements of lazy collections
         }
         assertThat(testee.toString()).isEqualTo(toString(testee));
@@ -2730,17 +2630,17 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final Traversable<Object> testee = of("a", "b", "c");
         if (isTraversableAgain()) {
             if (!testee.hasDefiniteSize()) {
-                assertThat(testee.toString()).isEqualTo(testee.stringPrefix() + "(a, ?)");
+                assertThat(testee.toString()).isEqualTo(testee.getClass().getSimpleName() + "(a, ?)");
                 testee.size(); // evaluates all elements of lazy collections
             }
             assertThat(testee.toString()).isEqualTo(toString(testee));
         } else {
-            assertThat(testee.toString()).isEqualTo(testee.stringPrefix() + "(?)");
+            assertThat(testee.toString()).isEqualTo(testee.getClass().getSimpleName() + "(?)");
         }
     }
 
     private static String toString(Traversable<?> traversable) {
-        return traversable.mkString(traversable.stringPrefix() + "(", ", ", ")");
+        return traversable.mkString(traversable.getClass().getSimpleName() + "(", ", ", ")");
     }
 
     // -- static collector()

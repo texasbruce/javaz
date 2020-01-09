@@ -1503,13 +1503,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         return filter(predicate.negate());
     }
 
-    @Deprecated
-    @Override
-    default Iterator<T> reject(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
     @Override
     default Option<T> findLast(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -1609,16 +1602,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @Override
     default Option<Iterator<T>> initOption() {
         return hasNext() ? Option.some(init()) : Option.none();
-    }
-
-    /**
-     * An {@code Iterator} is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    default boolean isAsync() {
-        return false;
     }
 
     @Override
@@ -1950,11 +1933,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             final Stream<T> that = Stream.ofAll(this);
             return Tuple.of(that.iterator().takeWhile(predicate), that.iterator().dropWhile(predicate));
         }
-    }
-
-    @Override
-    default String stringPrefix() {
-        return "Iterator";
     }
 
     @Override

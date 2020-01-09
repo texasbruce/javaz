@@ -18,6 +18,7 @@
  */
 package io.vavr.collection;
 
+import io.vavr.Tuple2;
 import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
@@ -165,6 +166,19 @@ final class Collections {
         return tabulate(n, ignored -> supplier.get());
     }
 
+    static <T, R extends java.util.Collection<T>> R toJavaCollection(
+            Traversable<T> source, Function<Integer, R> containerSupplier) {
+        return toJavaCollection(source, containerSupplier, 16);
+    }
+
+    static <T, R extends java.util.Collection<T>> R toJavaCollection(
+            Traversable<T> source, Function<Integer, R> containerSupplier, int defaultInitialCapacity) {
+        final int size = source.isTraversableAgain() && !source.isLazy() ? source.size() : defaultInitialCapacity;
+        final R container = containerSupplier.apply(size);
+        source.forEach(container::add);
+        return container;
+    }
+
     static <T, R> Collector<T, ArrayList<T>, R> toListAndThen(Function<ArrayList<T>, R> finisher) {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
@@ -173,6 +187,15 @@ final class Collections {
             return left;
         };
         return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    static <T, K, V, E extends Tuple2<? extends K, ? extends V>, R extends Map<K, V>> R toMap(
+            Traversable<T> source, R empty, Function<Iterable<E>, R> ofAll, Function<? super T, ? extends E> f) {
+        if (source.isEmpty()) {
+            return empty;
+        } else {
+            return ofAll.apply(Iterator.ofAll(source).map(f));
+        }
     }
 
     static <T> Iterator<T> fillObject(int n, T element) {
@@ -269,7 +292,7 @@ final class Collections {
 
     static <T> T last(Traversable<T> source){
         if (source.isEmpty()) {
-            throw new NoSuchElementException("last of empty " + source.stringPrefix());
+            throw new NoSuchElementException("last of empty " + source.getClass().getSimpleName());
         } else {
             final Iterator<T> it = source.iterator();
             T result = null;
@@ -302,17 +325,6 @@ final class Collections {
         } else {
             final Set<T> removed = HashSet.ofAll(elements);
             return removed.isEmpty() ? source : (C) source.filter(e -> !removed.contains(e));
-        }
-    }
-
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    static <C extends Traversable<T>, T> C reject(C source, Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (source.isEmpty()) {
-            return source;
-        } else {
-            return (C) source.filter(predicate.negate());
         }
     }
 

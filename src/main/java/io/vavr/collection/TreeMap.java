@@ -994,12 +994,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         return Maps.filterNot(this, this::createFromEntries, predicate);
     }
 
-    @Deprecated
-    @Override
-    public TreeMap<K, V> reject(BiPredicate<? super K, ? super V> predicate) {
-        return Maps.reject(this, this::createFromEntries, predicate);
-    }
-
     @Override
     public TreeMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.filter(this, this::createFromEntries, predicate);
@@ -1008,12 +1002,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     @Override
     public TreeMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.filterNot(this, this::createFromEntries, predicate);
-    }
-
-    @Deprecated
-    @Override
-    public TreeMap<K, V> reject(Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.reject(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -1026,12 +1014,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         return Maps.filterNotKeys(this, this::createFromEntries, predicate);
     }
 
-    @Deprecated
-    @Override
-    public TreeMap<K, V> rejectKeys(Predicate<? super K> predicate) {
-        return Maps.rejectKeys(this, this::createFromEntries, predicate);
-    }
-
     @Override
     public TreeMap<K, V> filterValues(Predicate<? super V> predicate) {
         return Maps.filterValues(this, this::createFromEntries, predicate);
@@ -1040,12 +1022,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     @Override
     public TreeMap<K, V> filterNotValues(Predicate<? super V> predicate) {
         return Maps.filterNotValues(this, this::createFromEntries, predicate);
-    }
-
-    @Deprecated
-    @Override
-    public TreeMap<K, V> rejectValues(Predicate<? super V> predicate) {
-        return Maps.rejectValues(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -1111,16 +1087,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     @Override
     public Option<TreeMap<K, V>> initOption() {
         return Maps.initOption(this);
-    }
-
-    /**
-     * An {@code TreeMap}'s value is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
     }
 
     @Override
@@ -1258,13 +1224,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    @Deprecated
-    public TreeMap<K, V> removeAll(BiPredicate<? super K, ? super V> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return reject(predicate);
-    }
-
-    @Override
     public TreeMap<K, V> removeAll(Iterable<? extends K> keys) {
         final V ignored = null;
         RedBlackTree<Tuple2<K, V>> removed = entries;
@@ -1279,20 +1238,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         } else {
             return new TreeMap<>(removed);
         }
-    }
-
-    @Override
-    @Deprecated
-    public TreeMap<K, V> removeKeys(Predicate<? super K> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return rejectKeys(predicate);
-    }
-
-    @Override
-    @Deprecated
-    public TreeMap<K, V> removeValues(Predicate<? super V> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return rejectValues(predicate);
     }
 
     @Override
@@ -1422,13 +1367,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
-    public String stringPrefix() {
-        return "TreeMap";
-    }
-
-    @Override
     public String toString() {
-        return mkString(stringPrefix() + "(", ", ", ")");
+        return mkString(getClass().getSimpleName() + "(", ", ", ")");
     }
 
     // -- private helpers

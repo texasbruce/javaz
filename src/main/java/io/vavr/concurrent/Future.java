@@ -1225,13 +1225,60 @@ public interface Future<T> extends Iterable<T>, Value<T> {
     }
 
     /**
-     * A {@code Futures}'s value is computed asynchronously.
+     * Returns the underlying value if this {@code Future} was completed successful, otherwise {@code other}.
      *
-     * @return true
+     * @param other An alternative value.
+     * @return A value of type {@code T}
      */
     @Override
-    default boolean isAsync() {
-        return true;
+    default T getOrElse(T other) {
+        return isEmpty() ? other : get();
+    }
+
+    /**
+     * Returns the underlying value if this {@code Future} was completed successfully, otherwise {@code supplier.get()}.
+     * <p>
+     * Please note, that this call blocks until the {@code Future} is completed. The alternate value is lazily evaluated.
+     *
+     * <pre>{@code
+     * Supplier<Double> supplier = () -> 5.342;
+     *
+     * // = 1.2
+     * Future.successful(1.2).getOrElse(supplier);
+     *
+     * // = 5.342
+     * Future.failed(new Exception()).getOrElse(supplier)
+     * }</pre>
+     *
+     * @param supplier An alternative value supplier.
+     * @return A value of type {@code T}
+     * @throws NullPointerException if supplier is null
+     */
+    @Override
+    default T getOrElse(Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isEmpty() ? supplier.get() : get();
+    }
+
+    /**
+     * Returns the underlying value if this {@code Future} was completed successfully, otherwise throws {@code exceptionSupplier.get()}.
+     * <p>
+     * Please note, that this call blocks until the {@code Future} is completed.
+     *
+     * @param <X>               a Throwable type
+     * @param exceptionSupplier An exception supplier.
+     * @return A value of type {@code T}.
+     * @throws NullPointerException if exceptionSupplier is null
+     * @throws X                    if no value is present
+     */
+    @Override
+    default <X extends Throwable> T getOrElseThrow(Supplier<X> exceptionSupplier) throws X {
+        Objects.requireNonNull(exceptionSupplier, "exceptionSupplier is null");
+        if (isEmpty()) {
+            throw exceptionSupplier.get();
+        } else {
+            return get();
+        }
     }
 
     /**
@@ -1242,26 +1289,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
     @Override
     default boolean isEmpty() {
         return await().getValue().get().isEmpty();
-    }
-
-    /**
-     * A {@code Future}'s value is computed eagerly.
-     *
-     * @return false
-     */
-    @Override
-    default boolean isLazy() {
-        return false;
-    }
-
-    /**
-     * A {@code Future} is single-valued.
-     *
-     * @return {@code true}
-     */
-    @Override
-    default boolean isSingleValued() {
-        return true;
     }
 
     @Override
@@ -1304,18 +1331,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
                 }
             })
         );
-    }
-
-    @Override
-    default Future<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        onSuccess(action);
-        return this;
-    }
-
-    @Override
-    default String stringPrefix() {
-        return "Future";
     }
 
 }

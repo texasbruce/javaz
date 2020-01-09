@@ -96,7 +96,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     @Override
     public T head() {
         if (isEmpty()) {
-            throw new NoSuchElementException("head of empty " + stringPrefix());
+            throw new NoSuchElementException("head of empty " + getClass().getSimpleName());
         } else {
             return findMin(comparator, forest).root;
         }
@@ -111,7 +111,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     @Override
     public PriorityQueue<T> tail() {
         if (isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty " + stringPrefix());
+            throw new UnsupportedOperationException("tail of empty " + getClass().getSimpleName());
         } else {
             return dequeue()._2;
         }
@@ -120,7 +120,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     @Override
     public Tuple2<T, PriorityQueue<T>> dequeue() {
         if (isEmpty()) {
-            throw new NoSuchElementException("dequeue of empty " + stringPrefix());
+            throw new NoSuchElementException("dequeue of empty " + getClass().getSimpleName());
         } else {
             final Tuple2<T, Seq<Node<T>>> dequeue = deleteMin(comparator, this.forest);
             return Tuple.of(dequeue._1, with(dequeue._2, this.size - 1));
@@ -130,16 +130,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     public PriorityQueue<T> merge(PriorityQueue<T> target) {
         final Seq<Node<T>> meld = meld(comparator, this.forest, target.forest);
         return with(meld, this.size + target.size);
-    }
-
-    /**
-     * A {@code PriorityQueue} is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
     }
 
     @Override
@@ -640,11 +630,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     public <U> PriorityQueue<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));
-    }
-
-    @Override
-    public String stringPrefix() {
-        return "PriorityQueue";
     }
 
     @Override

@@ -193,28 +193,12 @@ public abstract class AbstractValueTest {
         assertThat(consumer[0]).isEqualTo(value.isSingleValued() ? 1 : 6);
     }
 
-    // -- isAsync
-
-    @Test
-    public void shouldVerifyAsyncProperty() {
-        assertThat(empty().isAsync()).isFalse();
-        assertThat(of(1).isAsync()).isFalse();
-    }
-
     // -- isEmpty
 
     @Test
     public void shouldCalculateIsEmpty() {
         assertThat(empty().isEmpty()).isTrue();
         assertThat(of(1).isEmpty()).isFalse();
-    }
-
-    // -- isLazy
-
-    @Test
-    public void shouldVerifyLazyProperty() {
-        assertThat(empty().isLazy()).isFalse();
-        assertThat(of(1).isLazy()).isFalse();
     }
 
     // -- peek
@@ -927,37 +911,6 @@ public abstract class AbstractValueTest {
     }
 
     // ### ValueModule.Iterable ###
-
-    // -- corresponds
-
-    @Test
-    public void shouldntCorrespondsNilNil() {
-        assertThat(empty().corresponds(empty(), (o1, o2) -> true)).isTrue();
-    }
-
-    @Test
-    public void shouldntCorrespondsNilNonNil() {
-        assertThat(empty().corresponds(of(1), (o1, i2) -> true)).isFalse();
-    }
-
-    @Test
-    public void shouldntCorrespondsNonNilNil() {
-        assertThat(of(1).corresponds(empty(), (i1, o2) -> true)).isFalse();
-    }
-
-    @Test
-    public void shouldntCorrespondsDifferentLengths() {
-        if (!empty().isSingleValued()) {
-            assertThat(of(1, 2, 3).corresponds(of(1, 2), (i1, i2) -> true)).isFalse();
-            assertThat(of(1, 2).corresponds(of(1, 2, 3), (i1, i2) -> true)).isFalse();
-        }
-    }
-
-    @Test
-    public void shouldCorresponds() {
-        assertThat(of(1, 2, 3).corresponds(of(3, 4, 5), (i1, i2) -> i1 == i2 - 2)).isTrue();
-        assertThat(of(1, 2, 3).corresponds(of(1, 2, 3), (i1, i2) -> i1 == i2 + 1)).isFalse();
-    }
 
     @Test
     public void shouldHaveAReasonableToString() {

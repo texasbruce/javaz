@@ -188,11 +188,6 @@ public class LazyTest extends AbstractValueTest {
         assertThat(Lazy.of(Option::none).isEmpty()).isFalse();
     }
 
-    @Test
-    public void shouldContainASingleValue() {
-        assertThat(Lazy.of(Option::none).isSingleValued()).isTrue();
-    }
-
     // -- val(Supplier, Class) -- Proxy
 
     @Test
@@ -374,17 +369,6 @@ public class LazyTest extends AbstractValueTest {
         assertThat(Lazy.of(() -> 1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
     }
 
-    // === OVERRIDDEN
-
-    // -- isLazy
-
-    @Override
-    @Test
-    public void shouldVerifyLazyProperty() {
-        assertThat(empty().isLazy()).isTrue();
-        assertThat(of(1).isLazy()).isTrue();
-    }
-
 }
 
 /**
@@ -411,33 +395,13 @@ final class Undefined<T> implements Value<T>, Serializable {
     }
 
     @Override
-    public boolean isAsync() {
-        return prototype.isAsync();
-    }
-
-    @Override
     public boolean isEmpty() {
         return true;
     }
 
     @Override
-    public boolean isLazy() {
-        return prototype.isLazy();
-    }
-
-    @Override
-    public boolean isSingleValued() {
-        return prototype.isSingleValued();
-    }
-
-    @Override
     public Value<T> peek(Consumer<? super T> action) {
         return this;
-    }
-
-    @Override
-    public String stringPrefix() {
-        return null;
     }
 
     @Override

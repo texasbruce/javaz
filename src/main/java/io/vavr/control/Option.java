@@ -329,24 +329,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     }
 
     /**
-     * An {@code Option}'s value is computed synchronously.
-     *
-     * <pre>{@code
-     * // Prints "false"
-     * System.out.println(Option.of(1).isAsync());
-     *
-     * // Prints "false"
-     * System.out.println(Option.none().isAsync());
-     * }</pre>
-     *
-     * @return false
-     */
-    @Override
-    public final boolean isAsync() {
-        return false;
-    }
-
-    /**
      * Returns true, if this is {@code Some}, otherwise false, if this is {@code None}.
      * <p>
      * Please note that it is possible to create {@code new Some(null)}, which is defined.
@@ -366,42 +348,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     public final boolean isDefined() {
         return !isEmpty();
-    }
-
-    /**
-     * An {@code Option}'s value is computed eagerly.
-     *
-     * <pre>{@code
-     * // Prints "false"
-     * System.out.println(Option.of(3.14).isLazy());
-     *
-     * // Prints "false"
-     * System.out.println(Option.none().isLazy());
-     * }</pre>
-     *
-     * @return false
-     */
-    @Override
-    public final boolean isLazy() {
-        return false;
-    }
-
-    /**
-     * An {@code Option} is single-valued.
-     *
-     * <pre>{@code
-     * // Prints "true"
-     * System.out.println(Option.of("value").isSingleValued());
-     *
-     * // Prints "true"
-     * System.out.println(Option.none().isSingleValued());
-     * }</pre>
-     *
-     * @return {@code true}
-     */
-    @Override
-    public final boolean isSingleValued() {
-        return true;
     }
 
     /**
@@ -699,31 +645,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     }
 
     /**
-     * Applies an action to this value, if this option is defined, otherwise does nothing.
-     *
-     * <pre>{@code
-     * Consumer<Integer> print = i -> System.out.println(i);
-     *
-     * // Prints 5 and creates Some(8)
-     * Option.of(5).peek(print).map(i -> i + 3);
-     *
-     * // Does not print anything
-     * Option.<Integer>none().peek(print);
-     * }</pre>
-     *
-     * @param action An action which can be applied to an optional value
-     * @return this {@code Option}
-     */
-    @Override
-    public final Option<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (isDefined()) {
-            action.accept(get());
-        }
-        return this;
-    }
-
-    /**
      * Transforms this {@code Option}.
      *
      * <pre>{@code
@@ -796,13 +717,8 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
         }
 
         @Override
-        public String stringPrefix() {
-            return "Some";
-        }
-
-        @Override
         public String toString() {
-            return stringPrefix() + "(" + value + ")";
+            return getClass().getSimpleName() + "(" + value + ")";
         }
     }
 
@@ -849,13 +765,8 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
         }
 
         @Override
-        public String stringPrefix() {
-            return "None";
-        }
-
-        @Override
         public String toString() {
-            return stringPrefix();
+            return getClass().getSimpleName();
         }
 
         // -- Serializable implementation

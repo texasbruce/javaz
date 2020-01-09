@@ -690,8 +690,8 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldFoldNonEmptyIterableOfFailingFutures() {
-        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer> of(zZz(new Error()))).take(5);
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
+        Seq<? extends Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer>of(zZz(new Error()))).take(5);
+        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
         assertFailed(testee, Error.class);
     }
 
@@ -844,15 +844,6 @@ public class FutureTest extends AbstractValueTest {
     public void shouldThrowWhenGettingValueOfFailedFuture() {
         final Error error = new Error();
         assertThat(Future.failed(error).getValue()).isEqualTo(Option.some(Try.failure(error)));
-    }
-
-    // -- isAsync
-
-    @Override
-    @Test
-    public void shouldVerifyAsyncProperty() {
-        assertThat(empty().isAsync()).isTrue();
-        assertThat(of(1).isAsync()).isTrue();
     }
 
     // -- isCompleted()
@@ -1152,14 +1143,6 @@ public class FutureTest extends AbstractValueTest {
         final Future<Integer> future = Future.of(zZz(42)).map(i -> i * 2);
         future.await();
         assertThat(future.get()).isEqualTo(84);
-    }
-
-    @Test
-    public void shouldPeekFuture() {
-        final int[] consumer = new int[] { -1 };
-        Future.of(zZz(42)).peek(i -> consumer[0] = i);
-        waitUntil(() -> consumer[0] > 0);
-        assertThat(consumer[0]).isEqualTo(42);
     }
 
     @Test

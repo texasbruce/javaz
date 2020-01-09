@@ -780,14 +780,6 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(tree);
     }
 
-    // -- toVector
-
-    @Test
-    public void shouldReturnSelfOnConvertToTree() {
-        final Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toTree()).isSameAs(value);
-    }
-
     // ~~~~~~~ DISABLED TESTS ~~~~~~~
 
     // -- distinctBy(Comparator)
@@ -887,15 +879,6 @@ public class TreeTest extends AbstractTraversableTest {
     @Override
     @Test
     public void shouldReturnTheSameInstanceWhenFilterNotOnEmptyTraversable() {
-        // TODO: remove this overridden method with #1826
-    }
-
-    // -- reject
-
-    @Ignore
-    @Override
-    @Test
-    public void shouldReturnSameInstanceWhenRejectingEmptyTraversable() {
         // TODO: remove this overridden method with #1826
     }
 

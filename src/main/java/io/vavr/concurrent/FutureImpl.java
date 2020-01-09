@@ -338,7 +338,7 @@ final class FutureImpl<T> implements Future<T> {
     public String toString() {
         final Option<Try<T>> value = this.value;
         final String s = (value == null || value.isEmpty()) ? "?" : value.get().toString();
-        return stringPrefix() + "(" + s + ")";
+        return Future.class.getSimpleName() + "(" + s + ")";
     }
 
     /**
