@@ -1297,7 +1297,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldBiRejectWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
         final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.reject((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        final Map<Integer, String> dst = src.filterNot((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
         assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f").put(17, "11").put(19, "13"));
     }
 
@@ -1305,7 +1305,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldKeyRejectWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Map<Integer, String> dst = src.rejectKeys(k -> k % 2 == 0);
+        final Map<Integer, String> dst = src.filterNotKeys(k -> k % 2 == 0);
         assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
     }
 
@@ -1314,7 +1314,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldValueRejectWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(15, n -> Tuple.of(n, Integer.toHexString(n)));
         final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.rejectValues(v -> isDigits.matcher(v).matches());
+        final Map<Integer, String> dst = src.filterNotValues(v -> isDigits.matcher(v).matches());
         assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e"));
     }
 
@@ -1325,7 +1325,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldBiRemoveWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
         final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.removeAll((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        final Map<Integer, String> dst = src.filterNot((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
         assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f").put(17, "11").put(19, "13"));
     }
 
@@ -1333,7 +1333,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldKeyRemoveWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
-        final Map<Integer, String> dst = src.removeKeys(k -> k % 2 == 0);
+        final Map<Integer, String> dst = src.filterNotKeys(k -> k % 2 == 0);
         assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
     }
 
@@ -1342,7 +1342,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldValueRemoveWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
         final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Map<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
+        final Map<Integer, String> dst = src.filterNotValues(v -> isDigits.matcher(v).matches());
         assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f"));
     }
 

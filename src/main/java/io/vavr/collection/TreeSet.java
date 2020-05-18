@@ -40,9 +40,9 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final RedBlackTree<T> tree;
+    private final RedBlackTree<T, Comparator<? super T>> tree;
 
-    TreeSet(RedBlackTree<T> tree) {
+    TreeSet(RedBlackTree<T, Comparator<? super T>> tree) {
         this.tree = tree;
     }
 
@@ -78,7 +78,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     public static <T> TreeSet<T> empty(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return new TreeSet<>(RedBlackTree.empty(comparator));
+        return new TreeSet<>(RedBlackTree.<T, Comparator<? super T>>empty(comparator));
     }
 
     /**
@@ -195,7 +195,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         if (values instanceof TreeSet && ((TreeSet<?>) values).comparator() == comparator) {
             return (TreeSet<T>) values;
         } else {
-            return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(comparator, values)) : empty(comparator);
+            return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.<T, Comparator<? super T>>ofAll(comparator, values)) : empty(comparator);
         }
     }
 
@@ -521,7 +521,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public TreeSet<T> addAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        RedBlackTree<T> that = tree;
+        RedBlackTree<T, Comparator<? super T>> that = tree;
         for (T element : elements) {
             if (!that.contains(element)) {
                 that = that.insert(element);
@@ -539,9 +539,10 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return ofAll(Comparators.naturalComparator(), iterator().<R> collect(partialFunction));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Comparator<T> comparator() {
-        return tree.comparator();
+        return (Comparator<T>) tree.comparator();
     }
 
     @SuppressWarnings("unchecked")

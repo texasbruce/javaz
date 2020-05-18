@@ -66,10 +66,15 @@ tasks.withType(JavaCompile) {
     sourceCompatibility = 8
     targetCompatibility = 8
     options.encoding = 'UTF-8'
-    options.compilerArgs = [ '-Werror', '-Xlint:all', '-Xlint:-deprecation' ]
+    options.compilerArgs = [ '-Werror', '-Xlint:all', '-Xlint:-deprecation', "-Xlint:-processing" ]
 }
 
 dependencies {
+    compileOnly "org.projectlombok:lombok:1.18.12"
+    annotationProcessor "org.projectlombok:lombok:1.18.12"
+    testCompileOnly "org.projectlombok:lombok:1.18.12"
+    testAnnotationProcessor "org.projectlombok:lombok:1.18.12"
+
     testCompile "junit:junit:$junitVersion"
     testCompile "org.assertj:assertj-core:$assertjVersion"
 }
